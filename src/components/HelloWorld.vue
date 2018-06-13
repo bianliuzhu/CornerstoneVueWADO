@@ -55,13 +55,16 @@ export default {
     const _this = this;
     var element = document.getElementById("dicomImage");
     cornerstone.enable(element);
-    // 监听 downloadAndView 按钮 拼接url 调用 loadAndViewImage 函数
-    let url = document.getElementById("wadoURL").value;
-    // 拼接url
-    url = "wadouri:" + url;
-    // 调用这个函数加载像,和激活工具
-    _this.loadAndViewImage(url);
-
+    // 监听 downloadAndView 按钮 拼接 url 调用 loadAndViewImage 函数
+    document
+      .getElementById("downloadAndView")
+      .addEventListener("click", function(e) {
+        let url = document.getElementById("wadoURL").value;
+        // 拼接url
+        url = "wadouri:" + url;
+        // 调用这个函数加载像,和激活工具
+        _this.loadAndViewImage(url);
+      });
     // Dicom 加载 进度
     cornerstone.events.addEventListener(
       "cornerstoneimageloadprogress",
