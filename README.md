@@ -23,4 +23,5 @@ npm run dev
 # 使用方法
 
 * 具体使用步骤 请看 HelloWorld.vue 文件
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+* 如需帮助请 发送邮件给我 Email: bianliuzhu@gmail.com
+
