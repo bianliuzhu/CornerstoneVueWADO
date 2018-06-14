@@ -50,9 +50,11 @@ export default {
   name: "HelloWorld",
   data() {
     return {
+      // 路径是 apache Web Server 可以自己下载XAMPP搭建
       baseUrl: "http://127.0.0.1/testDICOM/",
-      // Pass in as a property, or use a computed property that looks at Vuex
-      // Then... Watch for changes. On change, load the new series
+      // 作为属性传入，或者使用查看Vuex的计算属性
+      // 然后……观察变化。在更改时，加载新系列。
+      // 自己的测试数据
       exampleStudyImageIds: [
         "MRStudy/MR000000.dcm",
         "MRStudy/MR000001.dcm",
@@ -64,19 +66,24 @@ export default {
   },
   mounted() {
     const _this = this;
-    //Injects cornerstone "enabled" canvas into DOM
+    // 找到要渲染的元素
     let canvas = this.$refs.canvas;
-    //在 DOM 中 将 canvas 元素 注册到 cornerstone
+
+    // 在 DOM 中将 canvas 元素注册到 cornerstone
     cornerstone.enable(canvas);
-    //  拼接 url
+
+    // 拼接 url : cornerstoneWADOImageLoader 需要 wadouri 路径头
     const imageUrl = _this.baseUrl + _this.exampleStudyImageIds[0];
     let imageId = "wadouri:" + imageUrl;
 
     //  Load & Display
     cornerstone.loadAndCacheImage(imageId).then(
       function(image) {
+        // 设置元素视口
         var viewport = cornerstone.getDefaultViewportForImage(canvas, image);
+        // 显示图像
         cornerstone.displayImage(canvas, image, viewport);
+        // 激活工具
         _this.initCanvasTools();
       },
       function(err) {
@@ -93,11 +100,6 @@ export default {
         loadProgress.textContent = `Dicom加载: ${eventData.percentComplete}%`;
       }
     );
-  },
-  beforeDestroy() {
-    // Remove jQuery event listeners
-    let canvas = this.$refs.canvas;
-    $(canvas).off();
   },
   methods: {
     initCanvasTools() {
@@ -144,9 +146,9 @@ export default {
       cornerstoneTools.panMultiTouch.activate(canvas); // - Multi (x2)
     },
     /*
-     * Window Resize
-     *
-    */
+       * Window Resize
+       *
+       */
     listenForWindowResize() {
       this.$nextTick(function() {
         window.addEventListener(
@@ -159,9 +161,9 @@ export default {
       cornerstone.resize(this.$refs.canvas, true);
     },
     /*
-     * Utility Methods
-     *
-    */
+       * Utility Methods
+       *
+       */
     debounce(func, wait, immediate) {
       var timeout;
       return function() {
