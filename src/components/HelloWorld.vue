@@ -108,16 +108,13 @@ export default {
       console.log(canvas);
       this.isInitLoad = false;
 
-      // Find imageIds for canvasStack
+      // 为 canvasStack 找到 imageIds
       let allImageIds = [];
-
       this.exampleStudyImageIds.forEach(function(imageId) {
-        console.log(imageId);
         let imageUrl = "wadouri:" + _self.baseUrl + imageId;
-        console.log(imageUrl);
         allImageIds.push(imageUrl);
       });
-      console.log(allImageIds);
+
       // Create canvasStack
       let canvasStack = {
         currentImageIdIndex: 0,
@@ -146,9 +143,9 @@ export default {
       cornerstoneTools.panMultiTouch.activate(canvas); // - Multi (x2)
     },
     /*
-       * Window Resize
-       *
-       */
+    * Window Resize
+    *
+    */
     listenForWindowResize() {
       this.$nextTick(function() {
         window.addEventListener(
@@ -161,9 +158,9 @@ export default {
       cornerstone.resize(this.$refs.canvas, true);
     },
     /*
-       * Utility Methods
-       *
-       */
+    * Utility Methods
+    *
+    */
     debounce(func, wait, immediate) {
       var timeout;
       return function() {
