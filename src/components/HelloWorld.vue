@@ -1,41 +1,31 @@
 <template>
 
-  <div class="container">
-    <div class="enterURL">
-      <input type="text" id="wadoURL" style="width: 35%;" placeholder="Enter WADO URL" value="http://127.0.0.1/testDICOM/CTStudy/1.5191KB.DCM">
-      <button type="button" id="downloadAndView">加载Dicom</button>
-    </div>
+  <!-- WRAPPER -->
+  <div class="image-canvas-wrapper" oncontextmenu="return false" unselectable='on' onselectstart='return false;' onmousedown='return false;'>
+    <!-- DICOM CANVAS -->
     <div id="loadProgress" style="position:relative;left:-15%">Dicom加载:</div>
-    <div style="width:512px; height:512px; position:relative; color:white; display:inline-block; border-style:solid; border-color:black;"
-      oncontextmenu="return false" class='disable-selection noIbar' unselectable='on' onselectstart='return false;' onmousedown='return false;'>
-      <div id="dicomImage" style="width:512px;height:512px;top:0px;left:0px; position:absolute">
-      </div>
-    </div>
+    <div ref="canvas" class="image-canvas" oncontextmenu="return false"></div>
   </div>
 
 </template>
 
 <script>
-// External Dependencies
-import $ from "jquery";
-import Hammer from "hammerjs";
-import * as cornerstoneMath from "cornerstone-math";
-
 //引入 cornerstone,dicomParser,cornerstoneWADOImageLoader
 import * as cornerstone from "cornerstone-core";
-import * as cornerstoneTools from "cornerstone-tools";
 import * as dicomParser from "dicom-parser";
+
 // 不建议 npm 安装 cornerstoneWADOImageLoader 如果你做了 会很头疼
 import * as cornerstoneWADOImageLoader from "../../static/dist/cornerstoneWADOImageLoader.js";
 
-//cornerstone.external.$ = $
-console.log(cornerstone.external);
-cornerstoneTools.external.$ = $;
+// Cornerstone 工具外部依赖
+import Hammer from "hammerjs";
+import * as cornerstoneMath from "cornerstone-math";
+import * as cornerstoneTools from "cornerstone-tools";
+
+// Specify external dependencies
 cornerstoneTools.external.Hammer = Hammer;
 cornerstoneTools.external.cornerstone = cornerstone;
 cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
-cornerstoneWADOImageLoader.external.$ = $;
-cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 cornerstoneWADOImageLoader.external.cornerstoneMath = cornerstoneMath;
 
 //指定要注册加载程序的基石实例
@@ -60,40 +50,40 @@ export default {
   name: "HelloWorld",
   data() {
     return {
-      msg: "Welcome to Your Vue.js App"
+      baseUrl: "http://127.0.0.1/testDICOM/",
+      // Pass in as a property, or use a computed property that looks at Vuex
+      // Then... Watch for changes. On change, load the new series
+      exampleStudyImageIds: [
+        "MRStudy/MR000000.dcm",
+        "MRStudy/MR000001.dcm",
+        "MRStudy/MR000002.dcm",
+        "MRStudy/MR000003.dcm"
+      ],
+      isInitLoad: true
     };
-  },
-  methods: {
-    //当点击加载图像时 调用 loadAndViewImage 加载 Dicom 图像
-    loadAndViewImage(imageId) {
-      //找到 要放置 Dicom Image 的元素
-      var element = document.getElementById("dicomImage");
-      // cornerstone.loadAndCacheImage 函数 负责加载图形 需要 图像地址 imageId
-      cornerstone.loadAndCacheImage(imageId).then(
-        function(image) {
-          var viewport = cornerstone.getDefaultViewportForImage(element, image);
-          cornerstone.displayImage(element, image, viewport);
-        },
-        function(err) {
-          alert(err);
-        }
-      );
-    }
   },
   mounted() {
     const _this = this;
-    var element = document.getElementById("dicomImage");
-    cornerstone.enable(element);
-    // 为 加载Dicom 按钮添加 点击事件 拼接 url 调用 loadAndViewImage 函数
-    document
-      .getElementById("downloadAndView")
-      .addEventListener("click", function(e) {
-        let url = document.getElementById("wadoURL").value;
-        // 拼接url
-        url = "wadouri:" + url;
-        // 调用这个函数加载像,和激活工具
-        _this.loadAndViewImage(url);
-      });
+    //Injects cornerstone "enabled" canvas into DOM
+    let canvas = this.$refs.canvas;
+    //在 DOM 中 将 canvas 元素 注册到 cornerstone
+    cornerstone.enable(canvas);
+    //  拼接 url
+    const imageUrl = _this.baseUrl + _this.exampleStudyImageIds[0];
+    let imageId = "wadouri:" + imageUrl;
+
+    //  Load & Display
+    cornerstone.loadAndCacheImage(imageId).then(
+      function(image) {
+        var viewport = cornerstone.getDefaultViewportForImage(canvas, image);
+        cornerstone.displayImage(canvas, image, viewport);
+        _this.initCanvasTools();
+      },
+      function(err) {
+        alert(err);
+      }
+    );
+
     // Dicom 加载 进度
     cornerstone.events.addEventListener(
       "cornerstoneimageloadprogress",
@@ -103,10 +93,103 @@ export default {
         loadProgress.textContent = `Dicom加载: ${eventData.percentComplete}%`;
       }
     );
+  },
+  beforeDestroy() {
+    // Remove jQuery event listeners
+    let canvas = this.$refs.canvas;
+    $(canvas).off();
+  },
+  methods: {
+    initCanvasTools() {
+      let _self = this;
+      let canvas = this.$refs.canvas;
+      console.log(canvas);
+      this.isInitLoad = false;
+
+      // Find imageIds for canvasStack
+      let allImageIds = [];
+
+      this.exampleStudyImageIds.forEach(function(imageId) {
+        console.log(imageId);
+        let imageUrl = "wadouri:" + _self.baseUrl + imageId;
+        console.log(imageUrl);
+        allImageIds.push(imageUrl);
+      });
+      console.log(allImageIds);
+      // Create canvasStack
+      let canvasStack = {
+        currentImageIdIndex: 0,
+        imageIds: allImageIds
+      };
+
+      // Enable Inputs
+      cornerstoneTools.mouseInput.enable(canvas);
+      cornerstoneTools.mouseWheelInput.enable(canvas);
+      cornerstoneTools.touchInput.enable(canvas);
+
+      // Set the stack as tool state
+      cornerstoneTools.addStackStateManager(canvas, ["stack"]);
+      cornerstoneTools.addToolState(canvas, "stack", canvasStack);
+      cornerstoneTools.stackScrollWheel.activate(canvas); // Mouse wheel
+      cornerstoneTools.scrollIndicator.enable(canvas); // Position indicator
+
+      // Mouse
+      cornerstoneTools.wwwc.activate(canvas, 1); // left click
+      cornerstoneTools.pan.activate(canvas, 2); // middle click
+      cornerstoneTools.zoom.activate(canvas, 4); // right click
+
+      // Touch / Gesture
+      cornerstoneTools.wwwcTouchDrag.activate(canvas); // - Drag
+      cornerstoneTools.zoomTouchPinch.activate(canvas); // - Pinch
+      cornerstoneTools.panMultiTouch.activate(canvas); // - Multi (x2)
+    },
+    /*
+     * Window Resize
+     *
+    */
+    listenForWindowResize() {
+      this.$nextTick(function() {
+        window.addEventListener(
+          "resize",
+          this.debounce(this.onWindowResize, 100)
+        );
+      });
+    },
+    onWindowResize() {
+      cornerstone.resize(this.$refs.canvas, true);
+    },
+    /*
+     * Utility Methods
+     *
+    */
+    debounce(func, wait, immediate) {
+      var timeout;
+      return function() {
+        var context = this;
+        var args = arguments;
+        var later = function() {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+      };
+    }
   }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.image-canvas-wrapper {
+  width: 100%;
+  height: 525px;
+}
+
+.image-canvas {
+  width: 100%;
+  height: 100%;
+}
 </style>
