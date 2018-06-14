@@ -29,6 +29,7 @@ import * as dicomParser from "dicom-parser";
 import * as cornerstoneWADOImageLoader from "../../static/dist/cornerstoneWADOImageLoader.js";
 
 //cornerstone.external.$ = $
+console.log(cornerstone.external);
 cornerstoneTools.external.$ = $;
 cornerstoneTools.external.Hammer = Hammer;
 cornerstoneTools.external.cornerstone = cornerstone;
