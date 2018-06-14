@@ -16,14 +16,32 @@
 </template>
 
 <script>
+// External Dependencies
+import $ from "jquery";
+import Hammer from "hammerjs";
+import * as cornerstoneMath from "cornerstone-math";
+
 //引入 cornerstone,dicomParser,cornerstoneWADOImageLoader
 import * as cornerstone from "cornerstone-core";
+import * as cornerstoneTools from "cornerstone-tools";
 import * as dicomParser from "dicom-parser";
 // 不建议 npm 安装 cornerstoneWADOImageLoader 如果你做了 会很头疼
 import * as cornerstoneWADOImageLoader from "../../static/dist/cornerstoneWADOImageLoader.js";
 
+//cornerstone.external.$ = $
+cornerstoneTools.external.$ = $;
+cornerstoneTools.external.Hammer = Hammer;
+cornerstoneTools.external.cornerstone = cornerstone;
+cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
+cornerstoneWADOImageLoader.external.$ = $;
+cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+cornerstoneWADOImageLoader.external.cornerstoneMath = cornerstoneMath;
+
 //指定要注册加载程序的基石实例
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+
+cornerstone.registerImageLoader("http", cornerstoneWADOImageLoader.loadImage);
+cornerstone.registerImageLoader("https", cornerstoneWADOImageLoader.loadImage);
 
 //配置 webWorker (必须配置)
 //注意这里的路径问题  如果路径不对 cornerstoneWADOImageLoaderWebWorker 会报错 index.html Uncaught SyntaxError: Unexpected token <
