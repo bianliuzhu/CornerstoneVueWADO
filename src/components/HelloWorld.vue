@@ -19,7 +19,7 @@
 //引入 cornerstone,dicomParser,cornerstoneWADOImageLoader
 import * as cornerstone from "cornerstone-core";
 import * as dicomParser from "dicom-parser";
-// 不建议 npm 安装 cornerstoneWADOImageLoader 如果你做了 会很头疼 
+// 不建议 npm 安装 cornerstoneWADOImageLoader 如果你做了 会很头疼
 import * as cornerstoneWADOImageLoader from "../../static/dist/cornerstoneWADOImageLoader.js";
 
 //指定要注册加载程序的基石实例
