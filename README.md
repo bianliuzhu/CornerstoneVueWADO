@@ -1,4 +1,4 @@
-# CornerstoneVue
+# CornerstoneVueWADO
 
 > 一个基于 Cornerstone 解析并显示 Dicom 的 Vue 项目
 
