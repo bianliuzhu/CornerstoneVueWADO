@@ -5,6 +5,7 @@
     <!-- DICOM CANVAS -->
     <div id="loadProgress" style="position:relative;left:-15%">Dicom加载:</div>
     <div ref="canvas" class="image-canvas" oncontextmenu="return false"></div>
+    <button @click="show()">点击</button>
   </div>
 
 </template>
@@ -51,61 +52,54 @@ export default {
   data() {
     return {
       // 路径是 apache Web Server 可以自己下载XAMPP搭建
-      baseUrl: "http://127.0.0.1/testDICOM/",
-      // 作为属性传入，或者使用查看Vuex的计算属性
-      // 然后……观察变化。在更改时，加载新系列。
-      // 自己的测试数据
-      exampleStudyImageIds: [
-        "MRStudy/MR000000.dcm",
-        "MRStudy/MR000001.dcm",
-        "MRStudy/MR000002.dcm",
-        "MRStudy/MR000003.dcm"
-      ],
+      baseUrl: "",
+      exampleStudyImageIds: "",
       isInitLoad: true
     };
   },
-  mounted() {
-    const _this = this;
-    // 找到要渲染的元素
-    let canvas = this.$refs.canvas;
-
-    // 在 DOM 中将 canvas 元素注册到 cornerstone
-    cornerstone.enable(canvas);
-
-    // 拼接 url : cornerstoneWADOImageLoader 需要 wadouri 路径头
-    const imageUrl = _this.baseUrl + _this.exampleStudyImageIds[0];
-    let imageId = "wadouri:" + imageUrl;
-
-    //  Load & Display
-    cornerstone.loadAndCacheImage(imageId).then(
-      function(image) {
-        // 设置元素视口
-        var viewport = cornerstone.getDefaultViewportForImage(canvas, image);
-        // 显示图像
-        cornerstone.displayImage(canvas, image, viewport);
-        // 激活工具
-        _this.initCanvasTools();
-      },
-      function(err) {
-        alert(err);
-      }
-    );
-
-    // Dicom 加载 进度
-    cornerstone.events.addEventListener(
-      "cornerstoneimageloadprogress",
-      function(event) {
-        const eventData = event.detail;
-        const loadProgress = document.getElementById("loadProgress");
-        loadProgress.textContent = `Dicom加载: ${eventData.percentComplete}%`;
-      }
-    );
-  },
+  mounted() {},
   methods: {
+    show() {
+      const _this = this;
+      // 找到要渲染的元素
+      let canvas = this.$refs.canvas;
+
+      // 在 DOM 中将 canvas 元素注册到 cornerstone
+      cornerstone.enable(canvas);
+      console.log(this.baseUrl);
+      console.log(this.exampleStudyImageIds);
+      // 拼接 url : cornerstoneWADOImageLoader 需要 wadouri 路径头
+      const imageUrl = this.baseUrl + this.exampleStudyImageIds[0];
+      let imageId = "wadouri:" + imageUrl; 
+
+      //  Load & Display
+      cornerstone.loadAndCacheImage(imageId).then(
+        function(image) {
+          // 设置元素视口
+          var viewport = cornerstone.getDefaultViewportForImage(canvas, image);
+          // 显示图像
+          cornerstone.displayImage(canvas, image, viewport);
+          // 激活工具
+          _this.initCanvasTools();
+        },
+        function(err) {
+          alert(err);
+        }
+      );
+
+      // Dicom 加载 进度
+      cornerstone.events.addEventListener(
+        "cornerstoneimageloadprogress",
+        function(event) {
+          const eventData = event.detail;
+          const loadProgress = document.getElementById("loadProgress");
+          loadProgress.textContent = `Dicom加载: ${eventData.percentComplete}%`;
+        }
+      );
+    },
     initCanvasTools() {
       let _self = this;
       let canvas = this.$refs.canvas;
-      console.log(canvas);
       this.isInitLoad = false;
 
       // 为 canvasStack 找到 imageIds
@@ -175,7 +169,21 @@ export default {
         timeout = setTimeout(later, wait);
         if (callNow) func.apply(context, args);
       };
+    },
+    getDicomData() {
+      let _this = this;
+      this.$http
+        .get("http://10.0.0.5:90/DoctorService/Service.asmx/CS_Dicom")
+        .then(function(res) {
+          let Image = res.body.value;
+          _this.baseUrl = res.body.value.filmain;
+          _this.exampleStudyImageIds = res.body.value.testDate.testDate1;
+        });
     }
+  },
+  created() {
+    this.getDicomData();
+    // this.show();
   }
 };
 </script>
