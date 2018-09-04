@@ -1,14 +1,9 @@
 <template>
   <div>
-    <button @click="show()">切换视图</button>
-    <div v-show="isShow" class="showA">
-    </div>
-    <div class="image-canvas-wrapper" v-show="!isShow" oncontextmenu="return false" unselectable='on' onselectstart='return false;'
+    <div class="image-canvas-wrapper"  oncontextmenu="return false" unselectable='on' onselectstart='return false;'
       onmousedown='return false;'>
       <!-- DICOM CANVAS -->
-      <div>
         <span id="loadProgress">Diocm加载: </span>
-      </div>
       <div ref="canvas" class="image-canvas" oncontextmenu="return false"></div>
     </div>
   </div>
@@ -191,6 +186,9 @@ export default {
         if (callNow) func.apply(context, args);
       };
     }
+  },
+  mounted() {
+    this.show();
   }
 };
 </script>
@@ -198,18 +196,13 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .image-canvas-wrapper {
-  width: 80%;
+  width: 100%;
+  height: 80vh;
   margin: 0 auto;
 }
 
 .image-canvas {
   width: 100%;
   height: 100%;
-}
-
-.showA {
-  width: 100%;
-  height: 100px;
-  background: red;
 }
 </style>
