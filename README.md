@@ -24,10 +24,10 @@ npm run dev
 
 * 具体使用步骤 请看 HelloWorld.vue 文件
 * 如需帮助请 发送邮件给我 Email: bianliuzhu@gmail.com
-
+代码图片
 ![代码](https://github.com/GleasonBian/GithubReadmeImage/blob/master/code.jpg)
 
-
+response(res):
 ![response](https://github.com/GleasonBian/GithubReadmeImage/blob/master/res.jpg)
 
 ![cornerstoneWADO_res.jpg](https://github.com/GleasonBian/GithubReadmeImage/blob/master/cornerstoneWADO_res.jpg)
