@@ -65,10 +65,20 @@ export default {
         this.$http
           .get("http://10.0.0.5:90/DoctorService/Service.asmx/CS_Dicom")
           .then(function(res) {
-            //console.log(res);
+            console.log("res:", res);
+
             let Image = res.body.value;
+            console.log("res.body.value:", res.body.value);
+
             _this.baseUrl = res.body.value.filmain;
+            console.log("res.body.value.filmain:", res.body.value.filmain);
+
             _this.exampleStudyImageIds = res.body.value.testDate.testDate1;
+            console.log(
+              "res.body.value.testDate.testDate1:",
+              res.body.value.filmain
+            );
+            
             // 找到要渲染的元素
             let canvas = this.$refs.canvas;
             console.log(canvas);
