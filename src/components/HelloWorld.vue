@@ -62,22 +62,22 @@ export default {
       const _this = this;
       if (this.isShow === true) {
         this.isShow = false;
-        this.$http
-          .get("http://10.0.0.5:90/DoctorService/Service.asmx/CS_Dicom")
-          .then(function(res) {
-            console.log("res:", res);
+        //this.$http
+        //  .get("https://www.baidu.com")
+        //  .then(function(res) {
+        //    console.log("res:", res);
 
-            let Image = res.body.value;
-            console.log("res.body.value:", res.body.value);
+        //    let Image = res.body.value;
+        //    console.log("res.body.value:", res.body.value);
 
-            _this.baseUrl = res.body.value.filmain;
-            console.log("res.body.value.filmain:", res.body.value.filmain);
+        //    _this.baseUrl = res.body.value.filmain;
+        //    console.log("res.body.value.filmain:", res.body.value.filmain);
 
-            _this.exampleStudyImageIds = res.body.value.testDate.testDate1;
-            console.log(
-              "res.body.value.testDate.testDate1:",
-              res.body.value.filmain
-            );
+        //    _this.exampleStudyImageIds = res.body.value.testDate.testDate1;
+        //    console.log(
+        //      "res.body.value.testDate.testDate1:",
+        //      res.body.value.filmain
+        //    );
             
             // 找到要渲染的元素
             let canvas = this.$refs.canvas;
@@ -85,9 +85,9 @@ export default {
             // 在 DOM 中将 canvas 元素注册到 cornerstone
             cornerstone.enable(canvas);
             // 拼接 url : cornerstoneWADOImageLoader 需要 wadouri 路径头
-            const imageUrl = _this.baseUrl + _this.exampleStudyImageIds[0];
-            let imageId = "wadouri:" + imageUrl;
-
+        //    const imageUrl = _this.baseUrl + _this.exampleStudyImageIds[0];
+            //let imageId = "wadouri:" + imageUrl;
+            let imageId = "wadouri:static/1.dcm"
             //  Load & Display
             cornerstone.loadAndCacheImage(imageId).then(
               function(image) {
@@ -118,10 +118,11 @@ export default {
                 }%`;
               }
             );
-          });
-      } else {
-        this.isShow = true;
       }
+          //});
+      //} else {
+      //  this.isShow = true;
+      //}
     },
     initCanvasTools() {
       let _self = this;
@@ -129,17 +130,17 @@ export default {
       this.isInitLoad = false;
 
       // 为 canvasStack 找到 imageIds
-      let allImageIds = [];
-      this.exampleStudyImageIds.forEach(function(imageId) {
-        let imageUrl = "wadouri:" + _self.baseUrl + imageId;
-        allImageIds.push(imageUrl);
-      });
+      //let allImageIds = [];
+      //this.exampleStudyImageIds.forEach(function(imageId) {
+      //  let imageUrl = "wadouri:" + _self.baseUrl + imageId;
+      //  allImageIds.push(imageUrl);
+     // });
 
       // Create canvasStack
-      let canvasStack = {
-        currentImageIdIndex: 0,
-        imageIds: allImageIds
-      };
+      //let canvasStack = {
+      //  currentImageIdIndex: 0,
+      //  imageIds: allImageIds
+     // };
 
       // Enable Inputs
       cornerstoneTools.mouseInput.enable(canvas);
@@ -148,7 +149,7 @@ export default {
 
       // Set the stack as tool state
       cornerstoneTools.addStackStateManager(canvas, ["stack"]);
-      cornerstoneTools.addToolState(canvas, "stack", canvasStack);
+      //cornerstoneTools.addToolState(canvas, "stack", canvasStack);
       cornerstoneTools.stackScrollWheel.activate(canvas); // Mouse wheel
       cornerstoneTools.scrollIndicator.enable(canvas); // Position indicator
 
